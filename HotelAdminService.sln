@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36623.8 d17.14
+VisualStudioVersion = 17.14.36623.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelAdminService", "HotelAdminService\HotelAdminService.csproj", "{E79745A9-289B-425A-9B83-AC8242309A89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "NotificationService\NotificationService.csproj", "{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{E79745A9-289B-425A-9B83-AC8242309A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E79745A9-289B-425A-9B83-AC8242309A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E79745A9-289B-425A-9B83-AC8242309A89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
