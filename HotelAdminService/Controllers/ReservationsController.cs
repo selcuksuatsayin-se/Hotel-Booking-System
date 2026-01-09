@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Azure.Messaging.ServiceBus; // <--- service-bus
 using HotelAdminService.Data;
-using HotelAdminService.Models;
 using HotelAdminService.Dtos;
+using HotelAdminService.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json; // <--- service-bus
 
 namespace HotelAdminService.Controllers
 {
@@ -11,10 +13,12 @@ namespace HotelAdminService.Controllers
     public class ReservationsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public ReservationsController(AppDbContext context)
+        public ReservationsController(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // POST: api/v1/Reservations
@@ -64,7 +68,29 @@ namespace HotelAdminService.Controllers
 
                 await transaction.CommitAsync();
 
-                return Ok(new { Message = "Booking Successful", ReservationId = reservation.Id });
+                var connectionString = _configuration.GetConnectionString("ServiceBusConnection");
+                var queueName = _configuration["ServiceBusQueue"];
+
+                await using var client = new ServiceBusClient(connectionString);
+                var sender = client.CreateSender(queueName);
+
+                // Create the message payload
+                var messageBody = new
+                {
+                    ReservationId = reservation.Id,
+                    GuestEmail = input.GuestEmail,
+                    HotelId = input.RoomId, // Logic simplification
+                    Dates = $"{input.CheckInDate} to {input.CheckOutDate}",
+                    Status = "Confirmed"
+                };
+
+                var message = new ServiceBusMessage(JsonSerializer.Serialize(messageBody));
+
+                // Send it!
+                await sender.SendMessageAsync(message);
+                // ---------------------------
+
+                return Ok(new { Message = "Booking Confirmed & Queued", Id = reservation.Id });
             }
             catch (Exception ex)
             {
