@@ -35,15 +35,32 @@ namespace NotificationService
 
         private async Task MessageHandler(ProcessMessageEventArgs args)
         {
+            // 1. Read the message body from the Queue
             string body = args.Message.Body.ToString();
-            _logger.LogInformation($"[New Booking Received]: {body}");
 
-            // TODO: Here you would use SMTP to send the actual email
-            // For now, we just log it to prove it works.
+            // 2. Decide: Is this a "Booking" or an "Admin Alert"?
+            if (body.Contains("LowCapacityAlert"))
+            {
+                // --- CASE A: Low Stock Alert (Triggered by Logic App -> API) ---
+                _logger.LogWarning($"[ADMIN ALERT RECEIVED]: {body}");
 
-            _logger.LogInformation("Simulating sending email... DONE.");
+                // Simulate sending an email to the Manager
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[URGENT]: Sending email to admin@hotel.com -> Stock Low!");
+                Console.ResetColor();
+            }
+            else
+            {
+                // --- CASE B: New Reservation (Triggered by User Booking) ---
+                _logger.LogInformation($"[NEW BOOKING RECEIVED]: {body}");
 
-            // Complete the message so it is removed from the queue
+                // Simulate sending an email to the Guest
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"[SUCCESS]: Sending confirmation email to guest.");
+                Console.ResetColor();
+            }
+
+            // 3. Delete message from Queue so it isn't processed again
             await args.CompleteMessageAsync(args.Message);
         }
 
