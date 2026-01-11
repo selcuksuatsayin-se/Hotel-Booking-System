@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelAdminService", "HotelA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "NotificationService\NotificationService.csproj", "{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{32EE5B9E-7A5A-4E71-AA52-A362809E7288}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC730D0D-8F19-49F7-BBE9-07DCD4A2F6DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32EE5B9E-7A5A-4E71-AA52-A362809E7288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32EE5B9E-7A5A-4E71-AA52-A362809E7288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32EE5B9E-7A5A-4E71-AA52-A362809E7288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32EE5B9E-7A5A-4E71-AA52-A362809E7288}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
