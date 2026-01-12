@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using HotelAdminService.Data;
 using HotelAdminService.Models;
 using HotelAdminService.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelAdminService.Controllers
 {
@@ -61,6 +62,7 @@ namespace HotelAdminService.Controllers
 
         // POST: api/v1/Hotels
         [HttpPost]
+        //[Authorize]
         public async Task<ActionResult<HotelReadDto>> CreateHotel(HotelCreateDto input)
         {
             var hotel = new Hotel
