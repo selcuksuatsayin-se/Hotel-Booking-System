@@ -4,6 +4,7 @@ using HotelAdminService.Data;
 using HotelAdminService.Models;
 using HotelAdminService.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HotelAdminService.Controllers
 {
@@ -12,18 +13,31 @@ namespace HotelAdminService.Controllers
     public class HotelsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMemoryCache _cache;
 
-        public HotelsController(AppDbContext context)
+        public HotelsController(AppDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         // GET: api/v1/Hotels
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HotelReadDto>>> GetHotels()
         {
-            var hotels = await _context.Hotels
-                .Select(h => new HotelReadDto
+            // 3. Define a unique key for this data
+            const string cacheKey = "all_hotels_list";
+
+            // 4. Try to get data from Cache
+            if (!_cache.TryGetValue(cacheKey, out List<HotelReadDto> hotels))
+            {
+                // --- CACHE MISS (Data not found in memory) ---
+                // We must query the database
+                Console.WriteLine("Fetching from Database..."); // Visual log for testing
+
+                var hotelsFromDb = await _context.Hotels.Include(h => h.Rooms).ToListAsync();
+
+                hotels = hotelsFromDb.Select(h => new HotelReadDto
                 {
                     Id = h.Id,
                     Name = h.Name,
@@ -33,8 +47,21 @@ namespace HotelAdminService.Controllers
                     Longitude = h.Longitude,
                     Description = h.Description,
                     Rating = h.Rating
-                })
-                .ToListAsync();
+                }).ToList();
+
+                // 5. Set Cache Options (How long to keep it?)
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(5)) // Expire after 5 mins
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(2)); // Or if unused for 2 mins
+
+                // 6. Save to Cache
+                _cache.Set(cacheKey, hotels, cacheOptions);
+            }
+            else
+            {
+                // --- CACHE HIT ---
+                Console.WriteLine("Returning from Cache!"); // Visual log for testing
+            }
 
             return Ok(hotels);
         }
@@ -92,6 +119,8 @@ namespace HotelAdminService.Controllers
                 Rating = hotel.Rating
             };
 
+            _cache.Remove("all_hotels_list");
+
             return CreatedAtAction(nameof(GetHotel), new { id = hotel.Id }, readDto);
         }
 
@@ -113,6 +142,8 @@ namespace HotelAdminService.Controllers
 
             await _context.SaveChangesAsync();
 
+            _cache.Remove("all_hotels_list");
+
             return NoContent();
         }
 
@@ -125,6 +156,8 @@ namespace HotelAdminService.Controllers
 
             _context.Hotels.Remove(hotel);
             await _context.SaveChangesAsync();
+
+            _cache.Remove("all_hotels_list");
 
             return NoContent();
         }
