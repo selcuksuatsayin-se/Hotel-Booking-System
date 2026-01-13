@@ -1,0 +1,410 @@
+//{
+//  "Routes": [
+//    {
+//      // Route 1: Hotel Service (Everything starting with /api/v1/...)
+//      "DownstreamPathTemplate": "/api/v1/{everything}",
+//      "DownstreamScheme": "https",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "hotel-admin-selcuk-cehtg2cfgte8axdv.canadacentral-01.azurewebsites.net",
+//          "Port": 443
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/hotel-service/{everything}",
+//      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+//    },
+//    {
+//      // Route 2: ML Service (Prediction)
+//      // Note: Assuming you will deploy Python app to Azure later. 
+//      // For now, you can point this to localhost if running locally, or skip until Python is deployed.
+//      "DownstreamPathTemplate": "/predict",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5000
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/ml-service/predict",
+//      "UpstreamHttpMethod": [ "POST" ]
+//    }
+//  ],
+//  "GlobalConfiguration": {
+//    "BaseUrl": "https://localhost:7000"
+//  }
+//}
+
+
+
+
+//{
+//  "Routes": [
+//    {
+//      "DownstreamPathTemplate": "/api/v1/{everything}",
+//      "DownstreamScheme": "https",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "hotel-admin-selcuk-cehtg2cfgte8axdv.canadacentral-01.azurewebsites.net",
+//          "Port": 443
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/api/v1/{everything}", // ✅ DEĞİŞTİRİLDİ
+//      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+//    },
+//    {
+//      "DownstreamPathTemplate": "/predict",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5000
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/api/v1/Prediction", // ✅ Backend route'u ile uyumlu
+//      "UpstreamHttpMethod": [ "POST" ]
+//    }
+//  ]
+//}
+
+
+
+//{
+//  "Routes": [
+//    {
+//      // Route 1: Hotel Service (Everything starting with /api/v1/...)
+//      "DownstreamPathTemplate": "/api/v1/{everything}",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5161 // ⬅️ BACKEND API PORT'UNUZ BU!
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/hotel-service/{everything}",
+//      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+//      "DangerousAcceptAnyServerCertificateValidator": true
+//    },
+//    {
+//      // Route 2: ML Service (Prediction)
+//      "DownstreamPathTemplate": "/predict",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5000
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/ml-service/predict",
+//      "UpstreamHttpMethod": [ "POST" ]
+//    }
+//  ],
+//  "GlobalConfiguration": {
+//    "BaseUrl": "http://localhost:5292",
+//    "DangerousAcceptAnyServerCertificateValidator": true
+//  }
+//}
+
+
+
+//{
+//  "Routes": [
+//    {
+//      // --- 1. SEARCH SERVICE (Sadece Arama/Listeleme) ---
+//      // Frontend GET isteği attığında (SearchPage) buraya, Port 5067'ye gidecek.
+//      "DownstreamPathTemplate": "/api/v1/Hotels/{everything}",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5067
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/hotel-service/api/v1/Hotels/{everything}",
+//      "UpstreamHttpMethod": [ "GET" ],
+//      "DangerousAcceptAnyServerCertificateValidator": true
+//    },
+//    {
+//      // Search Service için kök dizin (/api/v1/Hotels) garantisi
+//      "DownstreamPathTemplate": "/api/v1/Hotels",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5067
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/hotel-service/api/v1/Hotels",
+//      "UpstreamHttpMethod": [ "GET" ],
+//      "DangerousAcceptAnyServerCertificateValidator": true
+//    },
+//    {
+//      // --- 2. BOOKING SERVICE (Rezervasyon İşlemleri) ---
+//      // Frontend POST isteği attığında (Rezervasyon Yap) buraya, Port 5152'ye gidecek.
+//      "DownstreamPathTemplate": "/api/v1/Reservations/{everything}",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5152
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/hotel-service/api/v1/Reservations/{everything}",
+//      "UpstreamHttpMethod": [ "POST", "GET" ],
+//      "DangerousAcceptAnyServerCertificateValidator": true
+//    },
+//    {
+//      // Booking Service için kök dizin garantisi
+//      "DownstreamPathTemplate": "/api/v1/Reservations",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5152
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/hotel-service/api/v1/Reservations",
+//      "UpstreamHttpMethod": [ "POST", "GET" ],
+//      "DangerousAcceptAnyServerCertificateValidator": true
+//    },
+//    {
+//      // --- 3. ADMIN SERVICE (Yönetim İşlemleri) ---
+//      // Admin otel eklerken/silerken (POST/PUT/DELETE) buraya, Port 5161'e gidecek.
+//      // NOT: Eğer Admin Service local değil Azure'da ise Host kısmını Azure URL ile değiştir.
+//      "DownstreamPathTemplate": "/api/v1/Hotels/{everything}",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5161
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/hotel-service/api/v1/Hotels/{everything}",
+//      "UpstreamHttpMethod": [ "POST", "PUT", "DELETE" ],
+//      "DangerousAcceptAnyServerCertificateValidator": true
+//    },
+//    {
+//      // --- 4. ML PREDICTION SERVICE (Fiyat Tahmini) ---
+//      // Frontend /Prediction dediğinde Python servisine (Port 5000) yönlenir.
+//      "DownstreamPathTemplate": "/predict",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5000
+//        }
+//      ],
+//      // React kodun "/api/v1/Prediction" yoluna istek atıyor, bunu burayla eşledik.
+//      "UpstreamPathTemplate": "/hotel-service/api/v1/Prediction",
+//      "UpstreamHttpMethod": [ "POST" ]
+//    }
+//  ],
+//  "GlobalConfiguration": {
+//    "BaseUrl": "http://localhost:5292",
+//    "DangerousAcceptAnyServerCertificateValidator": true
+//  }
+//}
+
+
+
+
+
+//{
+//  "Routes": [
+//    {
+//      // 1. ADMIN SERVICE
+//      "DownstreamPathTemplate": "/api/v1/{everything}",
+//      "DownstreamScheme": "https",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "hotel-admin-selcuk-cehtg2cfgte8axdv.canadacentral-01.azurewebsites.net",
+//          "Port": 443
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/admin-service/{everything}",
+//      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+//    },
+//    {
+//      // 2. SEARCH SERVICE
+//      "DownstreamPathTemplate": "/api/search/{everything}",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5001 // HotelSearchService port
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/search-service/{everything}",
+//      "UpstreamHttpMethod": [ "GET" ]
+//    },
+//    {
+//      // 3. BOOKING SERVICE
+//      "DownstreamPathTemplate": "/api/bookings/{everything}",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5002 // HotelBookingService port
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/booking-service/{everything}",
+//      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+//    },
+//    {
+//      // 4. ML SERVICE
+//      "DownstreamPathTemplate": "/predict",
+//      "DownstreamScheme": "http",
+//      "DownstreamHostAndPorts": [
+//        {
+//          "Host": "localhost",
+//          "Port": 5000
+//        }
+//      ],
+//      "UpstreamPathTemplate": "/ml-service/predict",
+//      "UpstreamHttpMethod": [ "POST" ]
+//    }
+//  ]
+//}
+
+
+
+
+{
+  "Routes": [
+
+    {
+      // --- ÖZEL ROTA: My Reservations (Çakışmayı önlemek için) ---
+      "DownstreamPathTemplate": "/api/v1/Reservations/MyReservations",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5152
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Reservations/MyReservations",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+
+    {
+      // --- 1. SEARCH SERVICE (Search Controller - Filtreleme) ---
+      // Frontend "/hotel-service/api/v1/Search" dediğinde buraya
+      "DownstreamPathTemplate": "/api/v1/Search",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5067
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Search",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      // --- 2. SEARCH SERVICE (Hotels Controller - Listeleme/Detay) ---
+      // Frontend "/hotel-service/api/v1/Hotels" dediğinde buraya
+      "DownstreamPathTemplate": "/api/v1/Hotels/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5067
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Hotels/{everything}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      // Hotels kök dizin garantisi
+      "DownstreamPathTemplate": "/api/v1/Hotels",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5067
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Hotels",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      // --- 3. BOOKING SERVICE (Rezervasyon İşlemleri) ---
+      "DownstreamPathTemplate": "/api/v1/Reservations/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5152
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Reservations/{everything}",
+      "UpstreamHttpMethod": [ "POST", "GET" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      // Booking kök dizin garantisi
+      "DownstreamPathTemplate": "/api/v1/Reservations",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5152
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Reservations",
+      "UpstreamHttpMethod": [ "POST", "GET" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      // --- 4. ADMIN SERVICE (Yönetim İşlemleri) ---
+      // POST, PUT, DELETE işlemleri Admin Service'e gider
+      "DownstreamPathTemplate": "/api/v1/Hotels/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5161
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Hotels/{everything}",
+      "UpstreamHttpMethod": [ "POST", "PUT", "DELETE" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+    {
+      // --- 5. ADMIN SERVICE (YENİ: Müsaitlik & Fiyat Güncelleme) ---
+      // BulkUpdate işlemi buraya düşecek
+      "DownstreamPathTemplate": "/api/v1/Availability/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5161
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Availability/{everything}",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "DangerousAcceptAnyServerCertificateValidator": true
+    },
+
+    {
+      // --- 5. ML PREDICTION SERVICE (Fiyat Tahmini) ---
+      "DownstreamPathTemplate": "/predict",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5000
+        }
+      ],
+      "UpstreamPathTemplate": "/hotel-service/api/v1/Prediction",
+      "UpstreamHttpMethod": [ "POST" ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5292",
+    "DangerousAcceptAnyServerCertificateValidator": true
+  }
+}

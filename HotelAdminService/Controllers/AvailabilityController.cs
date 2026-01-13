@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using HotelAdminService.Data;
 using HotelAdminService.Models;
+using HotelAdminService.Dtos;
 
 namespace HotelAdminService.Controllers
 {
@@ -16,65 +17,61 @@ namespace HotelAdminService.Controllers
             _context = context;
         }
 
-        public class AvailabilityDto
-        {
-            public int RoomId { get; set; }
-            public DateOnly StartDate { get; set; }
-            public DateOnly EndDate { get; set; }
-            public int AvailableStock { get; set; }
-            public decimal Price { get; set; }
-            public bool IsVacant { get; set; }
-        }
-
         // POST: api/v1/Availability/BulkUpdate
         [HttpPost("BulkUpdate")]
-        public async Task<IActionResult> BulkUpdate([FromBody] AvailabilityDto request)
+        public async Task<IActionResult> BulkUpdate([FromBody] AvailabilityBulkUpdateDto input)
         {
-            if (request.StartDate > request.EndDate)
-                return BadRequest("Start date must be before end date.");
+            if (input.StartDate >= input.EndDate)
+                return BadRequest("Bitiş tarihi başlangıçtan sonra olmalıdır.");
 
-            // Loop through every day in the range
-            for (var date = request.StartDate; date <= request.EndDate; date = date.AddDays(1))
+            // 1. Önce Admin'in seçtiği oteldeki ilgili odayı bulalım (Örn: Swiss Hotel -> Standard Room)
+            // Not: Title araması yapıyoruz çünkü admin dropdown'dan "Standard" seçti.
+            var room = await _context.Rooms
+                .FirstOrDefaultAsync(r => r.HotelId == input.HotelId && r.Title.Contains(input.RoomTitle));
+
+            if (room == null)
+                return NotFound($"Bu otelde '{input.RoomTitle}' tipinde bir oda bulunamadı.");
+
+            // 2. Tarih döngüsü
+            var currentDate = input.StartDate;
+            while (currentDate < input.EndDate)
             {
-                var existing = await _context.Availabilities
-                    .FirstOrDefaultAsync(a => a.RoomId == request.RoomId && a.Date == date);
+                // O gün için kayıt var mı?
+                var availability = await _context.Availabilities
+                    .FirstOrDefaultAsync(a => a.RoomId == room.Id && a.Date == currentDate);
 
-                if (existing != null)
+                if (availability != null)
                 {
-                    existing.AvailableStock = request.AvailableStock;
-                    existing.IsVacant = request.IsVacant;
-                    existing.NightlyPrice = request.Price;
-                    _context.Entry(existing).State = EntityState.Modified;
+                    // VARSA GÜNCELLE
+                    availability.NightlyPrice = input.Price;
+                    availability.IsVacant = input.IsVacant;
+
+                    // Eğer "Occupied/Kapalı" seçildiyse stoğu 0 yap, değilse girilen stoğu yaz
+                    availability.AvailableStock = input.IsVacant ? input.Stock : 0;
+
+                    _context.Entry(availability).State = EntityState.Modified;
                 }
                 else
                 {
-                    _context.Availabilities.Add(new Availability
+                    // YOKSA YENİ EKLE
+                    var newAvail = new Availability
                     {
-                        RoomId = request.RoomId,
-                        Date = date,
-                        AvailableStock = request.AvailableStock,
-                        IsVacant = request.IsVacant,
-                        NightlyPrice = request.Price
-                    });
+                        RoomId = room.Id,
+                        Date = currentDate,
+                        NightlyPrice = input.Price,
+                        IsVacant = input.IsVacant,
+                        AvailableStock = input.IsVacant ? input.Stock : 0
+                    };
+                    _context.Availabilities.Add(newAvail);
                 }
+
+                currentDate = currentDate.AddDays(1);
             }
 
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Availability updated successfully." });
-        }
-
-        // GET: api/v1/Availability/5
-        // View availability for a specific room
-        [HttpGet("{roomId}")]
-        public async Task<ActionResult> GetAvailability(int roomId, [FromQuery] DateOnly? start, [FromQuery] DateOnly? end)
-        {
-            var query = _context.Availabilities.Where(a => a.RoomId == roomId);
-
-            if (start.HasValue) query = query.Where(a => a.Date >= start);
-            if (end.HasValue) query = query.Where(a => a.Date <= end);
-
-            var list = await query.OrderBy(a => a.Date).ToListAsync();
-            return Ok(list);
+            return Ok(new { Message = "Müsaitlik ve fiyatlar başarıyla güncellendi." });
         }
     }
 }
+
+
