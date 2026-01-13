@@ -26,13 +26,20 @@ namespace HotelAdminService.Dtos
     // This DOES have the Id, because the UI needs it to make links.
     public class HotelReadDto
     {
-        public int Id { get; set; } // <--- We send this back to the user
+        public int Id { get; set; }
         public string Name { get; set; }
         public string City { get; set; }
-        public string Address { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public string Description { get; set; }
+
+        // --- EKLENEN ALANLAR ---
+        public string District { get; set; } // İlçe
+        public string Country { get; set; }  // Ülke
+        public string Address { get; set; }  // Keep this!
+        public double Latitude { get; set; } // Harita Enlem
+        public double Longitude { get; set; } // Harita Boylam
         public double Rating { get; set; }
+        // -----------------------
+
+        public string Description { get; set; }
+        public List<RoomReadDto> Rooms { get; set; } = new List<RoomReadDto>();
     }
 }
