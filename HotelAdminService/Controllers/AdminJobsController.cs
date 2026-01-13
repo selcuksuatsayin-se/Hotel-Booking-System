@@ -22,21 +22,26 @@ namespace HotelAdminService.Controllers
         }
 
         // POST: api/v1/AdminJobs/CheckCapacity
-        // This endpoint will be called by Azure Logic Apps every night
         [HttpPost("CheckCapacity")]
         public async Task<IActionResult> CheckCapacity()
         {
             _logger.LogInformation("Nightly Capacity Job Triggered via HTTP.");
 
             var start = DateOnly.FromDateTime(DateTime.Now);
-            var end = start.AddDays(30);
+
+            // DÜZELTME 1: Test tarihlerini yakalayabilmek için süreyi 1 yıla çıkardık.
+            var end = start.AddDays(365);
 
             // 1. Find rooms with < 20% capacity
             var lowStockRooms = await _context.Availabilities
                 .Include(a => a.Room).ThenInclude(r => r.Hotel)
                 .Where(a => a.Date >= start && a.Date <= end)
-                .Where(a => (double)a.AvailableStock / a.Room.TotalCount < 0.2)
+                // DÜZELTME 2: Bölme hatası riskine karşı çarpma mantığı (Stock * 5 < Total ise %20'den azdır)
+                // Örn: Stok 1, Total 10 -> 1*5 < 10 -> 5 < 10 (TRUE)
+                .Where(a => (a.AvailableStock * 5) < a.Room.TotalCount)
                 .ToListAsync();
+
+            _logger.LogInformation($"Found {lowStockRooms.Count} rooms with low stock.");
 
             if (lowStockRooms.Any())
             {
@@ -50,22 +55,26 @@ namespace HotelAdminService.Controllers
                 {
                     var messageBody = new
                     {
-                        Type = "LowCapacityAlert",
+                        Type = "LowCapacityAlert", // Worker bu Type'ı bekliyor
                         Hotel = item.Room.Hotel.Name,
                         Room = item.Room.Title,
                         Date = item.Date.ToString("yyyy-MM-dd"),
                         Remaining = item.AvailableStock,
-                        Message = "URGENT: Stock is below 20%!"
+                        Total = item.Room.TotalCount,
+                        Message = $"URGENT: Stock is below 20% ({item.AvailableStock}/{item.Room.TotalCount})!"
                     };
 
                     var message = new ServiceBusMessage(JsonSerializer.Serialize(messageBody));
                     await sender.SendMessageAsync(message);
                     count++;
                 }
-                return Ok(new { Message = $"Job Complete. Sent {count} alerts." });
+
+                string resultMsg = $"Job Complete. Sent {count} alerts.";
+                _logger.LogInformation(resultMsg);
+                return Ok(new { Message = resultMsg });
             }
 
-            return Ok(new { Message = "Job Complete. No low stock found." });
+            return Ok(new { Message = "Job Complete. No low stock found within the next 365 days." });
         }
     }
 }

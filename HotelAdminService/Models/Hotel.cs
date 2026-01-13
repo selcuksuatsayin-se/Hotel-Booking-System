@@ -12,6 +12,8 @@ namespace HotelAdminService.Models
 
         [Required]
         public string City { get; set; } = string.Empty; // e.g., "Bodrum"
+        public string District { get; set; } = string.Empty; // İlçe (Örn: Bodrum)
+        public string Country { get; set; } = "Turkey";      // Ülke
 
         public string Address { get; set; } = string.Empty;
 

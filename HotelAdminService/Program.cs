@@ -54,16 +54,16 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-// 4. Add CORS (Important if your frontend is on a different port/domain)
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll", policy =>
-//    {
-//        policy.AllowAnyOrigin()
-//              .AllowAnyMethod()
-//              .AllowAnyHeader();
-//    });
-//});
+//4.Add CORS(Important if your frontend is on a different port/domain)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 // ======================
 // AUTHENTICATION (Entra External ID)
@@ -83,7 +83,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-//app.UseCors("AllowAll");
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -95,8 +95,10 @@ app.MapControllers();
 // ======================
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // db.Database.EnsureDeleted(); // Temiz sayfa açmak istersen yorumu kaldýr (Dikkat: her þeyi siler)
+    db.Database.EnsureCreated();   // Veritabaný yoksa oluþturur
+    DbSeeder.Seed(db);             // Verileri basar
 }
 
 app.Run();
