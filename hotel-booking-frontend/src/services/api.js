@@ -13,8 +13,9 @@ const initializeMsal = () => {
     return msalInitPromise;
 };
 
-// Gateway URL
-const API_GATEWAY_URL = 'http://localhost:5292'; 
+// --- DEĞİŞİKLİK BURADA ---
+// Eğer VITE_API_URL tanımlıysa (Azure) onu kullan, değilse (Local) localhost'u kullan.
+const API_GATEWAY_URL = import.meta.env.VITE_API_URL || 'http://localhost:5292';
 
 const api = axios.create({
   baseURL: API_GATEWAY_URL,
