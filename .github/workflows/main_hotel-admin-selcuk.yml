@@ -23,17 +23,18 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-
+      # DÜZELTME BURADA:
+      # Sadece 'dotnet publish' yeterli (build işlemini de yapar).
+      # Kritik nokta: Proje dosyasının yolunu (HotelAdminService/HotelAdminService.csproj) belirttik.
+      # Çıktıyı 'myapp' klasörüne veriyoruz.
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish HotelAdminService/HotelAdminService.csproj -c Release -o myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: myapp # Sadece derlenmiş dosyaların olduğu klasörü paketle
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,6 +52,7 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
+          # Senin dosyadaki secret'lar aynen korundu
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_AE59F699FE774FA59B53CAA5E0989F47 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DA09E903605F46439AF2CA0633505912 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3D2A1C9E45924557A253876084B0E432 }}
@@ -62,4 +64,3 @@ jobs:
           app-name: 'hotel-admin-selcuk'
           slot-name: 'Production'
           package: .
-          
