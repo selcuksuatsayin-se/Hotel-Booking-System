@@ -39,7 +39,7 @@ export default function HotelDetailPage() {
     const handleBook = async (roomId) => {
         // VALIDASYON: Giriş yapmadıysa Email zorunlu
         if (!isAuthenticated && !guestEmail) {
-            alert("Lütfen rezervasyon onayı için e-mail adresinizi giriniz.");
+            alert("Please enter your email address for reservation confirmation.");
             return;
         }
 
@@ -56,11 +56,11 @@ export default function HotelDetailPage() {
         try {
             await api.post("/hotel-service/api/v1/Reservations", payload);
             setBookingStatus("success");
-            alert(`✅ Rezervasyon Başarılı!\n\n${isAuthenticated ? "Rezervasyonlarım sayfasından kontrol edebilirsiniz." : "Onay maili adresinize gönderildi."}`);
+            alert(`Booking Successful!\n\n${isAuthenticated ? "You can check your reservations in the My Reservations page." : "A confirmation email has been sent to your address."}`);
         } catch (err) {
             console.error(err);
             setBookingStatus("error");
-            alert("❌ Booking Failed.");
+            alert("Booking Failed.");
         }
     };
 
@@ -83,8 +83,8 @@ export default function HotelDetailPage() {
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-6">
                         <h3 className="text-lg font-bold text-orange-800 mb-2">Guest Booking</h3>
                         <p className="text-sm text-gray-600 mb-4">
-                            Üye girişi yapmadınız. Rezervasyon bilgileri için lütfen e-mail adresinizi giriniz. 
-                            <span className="font-bold"> (%10 İndirimden faydalanmak için lütfen giriş yapınız)</span>
+                            You are not logged in. Please enter your email address for reservation details.
+                            <span className="font-bold"> (Log in to get 10% discount)</span>
                         </p>
                         <input 
                             type="email" 

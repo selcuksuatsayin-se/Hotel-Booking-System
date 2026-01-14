@@ -170,13 +170,13 @@ export default function SearchPage() {
                         
                         {filteredAndSortedHotels.length === 0 && (
                             <div className="text-center mt-10 bg-white p-8 rounded-lg shadow">
-                                <h3 className="text-xl text-gray-600">Otel bulunamadı.</h3>
-                                <p className="text-gray-400 mt-2">Filtreleri değiştirmeyi veya tüm otelleri görmeyi deneyin.</p>
+                                <h3 className="text-xl text-gray-600">Hotel not found.</h3>
+                                <p className="text-gray-400 mt-2">Try changing the filters or viewing all hotels.</p>
                                 <button 
                                     onClick={() => { setMinRating(0); setSortOption("recommended"); fetchAllHotels(); }}
                                     className="mt-4 text-blue-500 underline hover:text-blue-700"
                                 >
-                                    Tüm Otelleri ve Filtreleri Sıfırla
+                                    Reset All Hotels and Filters
                                 </button>
                             </div>
                         )}

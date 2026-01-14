@@ -59,7 +59,7 @@ export default function AdminPage() {
                     setHotels(res.data);
                     if (res.data.length > 0) setSelectedHotelId(res.data[0].id);
                 } catch (err) {
-                    console.error("Oteller yüklenemedi", err);
+                    console.error("Hotels could not be loaded.", err);
                 }
             }
         };
@@ -68,7 +68,7 @@ export default function AdminPage() {
 
     // 1. ADIM: AI Tahmini Al
     const handlePredict = async () => {
-        if (!startDate) { alert("Lütfen önce bir tarih seçin."); return; }
+        if (!startDate) { alert("Please choose a date first.."); return; }
         
         setLoading(true);
         try {
@@ -86,7 +86,7 @@ export default function AdminPage() {
             setPrice(res.data.suggested_price);
             
         } catch (err) {
-            alert("Tahmin servisine ulaşılamadı. (ML Servisi açık mı?)");
+            alert("Prediction service could not be reached. (Is ML Service running?)");
         } finally {
             setLoading(false);
         }
@@ -95,7 +95,7 @@ export default function AdminPage() {
     // 2. ADIM: Veritabanına Kaydet (Bulk Update)
     const handleSave = async () => {
         if (!selectedHotelId || !startDate || !endDate || !price) {
-            alert("Lütfen tüm alanları doldurun.");
+            alert("Please fill in all fields.");
             return;
         }
 
@@ -112,10 +112,10 @@ export default function AdminPage() {
             };
 
             await api.post("/hotel-service/api/v1/Availability/BulkUpdate", payload);
-            alert("✅ Güncelleme Başarılı! Tarih aralığına işlendi.");
+            alert("Update Successful! Date range processed.");
         } catch (err) {
             console.error(err);
-            alert("❌ Güncelleme başarısız oldu.");
+            alert("Update failed.");
         } finally {
             setLoading(false);
         }
@@ -141,10 +141,10 @@ export default function AdminPage() {
             <div className="flex flex-col items-center justify-center mt-20 p-6">
                 <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-6 w-full max-w-2xl shadow-md rounded-r" role="alert">
                     <p className="font-bold text-xl mb-2">🚫 Erişim Reddedildi (Access Denied)</p>
-                    <p>Bu sayfayı görüntülemek için <strong>Yönetici (Admin)</strong> yetkisine sahip değilsiniz.</p>
+                    <p>To view this page, you must have <strong>Admin</strong> privileges.</p>
                 </div>
                 <div className="mt-6 text-gray-500 text-sm text-center">
-                    <p>Giriş yapılan hesap: <span className="font-bold text-gray-700">{accounts[0]?.username}</span></p>
+                    <p>Login account: <span className="font-bold text-gray-700">{accounts[0]?.username}</span></p>
                     <button 
                         onClick={() => window.location.href = "/"}
                         className="mt-4 bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900 transition"
@@ -172,7 +172,7 @@ export default function AdminPage() {
                 
                 {/* 1. Otel Seçimi */}
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-                    <label className="block text-gray-700 font-bold mb-2">🏨 Yönetilecek Oteli Seç</label>
+                    <label className="block text-gray-700 font-bold mb-2">🏨 Select the hotel to be managed</label>
                     <select 
                         className="w-full border p-3 rounded bg-gray-50 text-lg"
                         value={selectedHotelId}
@@ -186,16 +186,16 @@ export default function AdminPage() {
 
                 {/* 2. Yönetim Formu */}
                 <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
-                    <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Müsaitlik & Fiyat Yönetimi</h2>
+                    <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Availability and Pricing Management</h2>
 
                     {/* Tarihler */}
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label className="block text-sm font-bold text-gray-600 mb-1">Başlangıç</label>
+                            <label className="block text-sm font-bold text-gray-600 mb-1">Start Date</label>
                             <input type="date" className="w-full border p-2 rounded" value={startDate} onChange={e => setStartDate(e.target.value)} />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-gray-600 mb-1">Bitiş</label>
+                            <label className="block text-sm font-bold text-gray-600 mb-1">End Date</label>
                             <input type="date" className="w-full border p-2 rounded" value={endDate} onChange={e => setEndDate(e.target.value)} />
                         </div>
                     </div>
@@ -203,26 +203,26 @@ export default function AdminPage() {
                     {/* Oda Bilgileri */}
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label className="block text-sm font-bold text-gray-600 mb-1">Oda Tipi</label>
+                            <label className="block text-sm font-bold text-gray-600 mb-1">Room Type</label>
                             <select className="w-full border p-2 rounded" value={roomType} onChange={e => setRoomType(e.target.value)}>
                                 <option value="Standard Room">Standard Room</option>
                                 <option value="Deluxe Room">Deluxe Room</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-gray-600 mb-1">Oda Adedi (Stok)</label>
+                            <label className="block text-sm font-bold text-gray-600 mb-1">Room Count (Stock)</label>
                             <input type="number" className="w-full border p-2 rounded" value={roomCount} onChange={e => setRoomCount(e.target.value)} />
                         </div>
                     </div>
 
                     {/* Fiyat ve AI Tahmini */}
                     <div className="mb-6">
-                        <label className="block text-sm font-bold text-gray-600 mb-1">Gecelik Fiyat (€)</label>
+                        <label className="block text-sm font-bold text-gray-600 mb-1">Nightly Price (€)</label>
                         <div className="flex gap-2">
                             <input 
                                 type="number" 
                                 className="flex-1 border p-2 rounded text-lg font-bold text-green-700" 
-                                placeholder="Örn: 150" 
+                                placeholder="Example: 150" 
                                 value={price} 
                                 onChange={e => setPrice(e.target.value)} 
                             />
@@ -234,12 +234,12 @@ export default function AdminPage() {
                                 {loading ? "..." : "🤖 AI Predict"}
                             </button>
                         </div>
-                        <p className="text-xs text-gray-400 mt-1">*AI butonuna basınca önerilen fiyat kutuya yazılır, değiştirebilirsiniz.</p>
+                        <p className="text-xs text-gray-400 mt-1">*AI button will write the recommended price to the input field, you can change it.</p>
                     </div>
 
                     {/* Durum (Status) */}
                     <div className="mb-8">
-                        <label className="block text-sm font-bold text-gray-600 mb-2">Durum</label>
+                        <label className="block text-sm font-bold text-gray-600 mb-2">Status</label>
                         <div className="flex gap-6">
                             <label className="flex items-center cursor-pointer">
                                 <input 
@@ -249,7 +249,7 @@ export default function AdminPage() {
                                     onChange={() => setStatus("vacant")}
                                     className="w-5 h-5 text-green-600" 
                                 />
-                                <span className="ml-2 font-medium">✅ Dolu (Vacant - Satışa Açık)</span>
+                                <span className="ml-2 font-medium">Vacant - Available for Sale</span>
                             </label>
                             <label className="flex items-center cursor-pointer">
                                 <input 
@@ -259,7 +259,7 @@ export default function AdminPage() {
                                     onChange={() => setStatus("occupied")}
                                     className="w-5 h-5 text-red-600" 
                                 />
-                                <span className="ml-2 font-medium">❌ Boş (Occupied - Kapalı)</span>
+                                <span className="ml-2 font-medium">Occupied - Closed</span>
                             </label>
                         </div>
                     </div>
@@ -270,7 +270,7 @@ export default function AdminPage() {
                         disabled={loading}
                         className="w-full bg-slate-900 text-white p-4 rounded-lg font-bold text-lg hover:bg-slate-800 transition shadow-lg"
                     >
-                        {loading ? "İşleniyor..." : "💾 Değişiklikleri Kaydet"}
+                        {loading ? "Processing..." : "💾 Save Changes"}
                     </button>
                 </div>
             </div>
