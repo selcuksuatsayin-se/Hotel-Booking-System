@@ -23,12 +23,8 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # DÜZELTME BURADA:
-      # Sadece 'dotnet publish' yeterli (build işlemini de yapar).
-      # Kritik nokta: Proje dosyasının yolunu (HotelAdminService/HotelAdminService.csproj) belirttik.
-      # Çıktıyı 'myapp' klasörüne veriyoruz.
       - name: dotnet publish
-        run: dotnet publish HotelAdminService/HotelBookingService/HotelBookingService.csproj -c Release -o myapp
+        run: dotnet publish ApiGateway/ApiGateway.csproj -c Release -o myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -65,3 +61,4 @@ jobs:
           package: .
 
           
+
