@@ -38,7 +38,12 @@ jobs:
           name: python-app
           # DÜZELTME BURADA: Nokta (.) yerine klasör adını yazdık.
           # Artık sadece bu klasörün içeriği Azure'a gidecek.
-          path: HotelMLService
+          path: |
+            HotelMLService
+            !HotelMLService/hotel_bookings.csv
+            !HotelMLService/venv
+            !HotelMLService/__pycache__
+            !HotelMLService/*.git
 
   deploy:
     runs-on: ubuntu-latest
@@ -66,3 +71,4 @@ jobs:
         with:
           app-name: 'hotel-ml-selcuk'
           slot-name: 'Production'
+
