@@ -8,14 +8,14 @@ This project is a comprehensive **Hotel Booking System** (similar to Hotels.com)
 
 The application utilizes **Azure App Services**, **Azure SQL**, **Service Bus**, and **Logic Apps**.
 
-- **Frontend Static Web App:** [https://purple-smoke-0a571230f.6.azurestaticapps.net](https://purple-smoke-0a571230f.6.azurestaticapps.net)
-- **API Gateway:** [https://hotel-gateway-selcuk-a9drh2hqgrf0bece.canadacentral-01.azurewebsites.net/](https://hotel-gateway-selcuk-a9drh2hqgrf0bece.canadacentral-01.azurewebsites.net/)
-- **Hotel Admin Service:** [https://hotel-admin-selcuk-cehtg2cfgte8axdv.canadacentral-01.azurewebsites.net/](https://hotel-admin-selcuk-cehtg2cfgte8axdv.canadacentral-01.azurewebsites.net/)
-- **Hotel Booking Service:** [https://hotel-booking-selcuk-gdh6fhcyf5a9ares.canadacentral-01.azurewebsites.net/](https://hotel-booking-selcuk-gdh6fhcyf5a9ares.canadacentral-01.azurewebsites.net/)
-- **Hotel Search Service:** [https://hotel-search-selcuk-fxaje4gef7bndsf3.canadacentral-01.azurewebsites.net/](https://hotel-search-selcuk-fxaje4gef7bndsf3.canadacentral-01.azurewebsites.net/)
-- **Hotel Notification Service:** [https://hotel-notification-selcuk-dgbga8enh5byaxfj.canadacentral-01.azurewebsites.net/](https://hotel-notification-selcuk-dgbga8enh5byaxfj.canadacentral-01.azurewebsites.net/)
-- **Hotel ML Service:** [https://hotel-ml-selcuk-djc8aeg2cheterah.canadacentral-01.azurewebsites.net/](https://hotel-ml-selcuk-djc8aeg2cheterah.canadacentral-01.azurewebsites.net/)
-- **Video Presentation:** \[[demo-video](https://youtu.be/OB0S43m_ajw)\]
+- **Frontend Static Web App:** 
+- **API Gateway:** 
+- **Hotel Admin Service:** 
+- **Hotel Booking Service:** 
+- **Hotel Search Service:** 
+- **Hotel Notification Service:** 
+- **Hotel ML Service:** 
+- **Video Presentation:** 
   > **⚠️ Deployment Note:** While all backend microservices (SQL, Service Bus, Logic App, ML, Admin, Booking) are successfully deployed and fully operational on Azure, I experienced intermittent high latency and HTTP 500 errors on the Frontend. I suspect this is caused by a Region Mismatch: The Frontend is hosted on Azure Static Web Apps (East US), while the entire backend ecosystem resides in Canada Central. This likely caused cross-region timeouts during API calls. Therefore, the **Demo Video** demonstrates the system running via a **Hybrid Approach** (Local Gateway connected to Backend Resources) to bypass this latency and showcase full system functionality smoothly.
 
 ## 🏗️ Architecture & Design
